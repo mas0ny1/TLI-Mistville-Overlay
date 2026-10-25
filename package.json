@@ -1,0 +1,16 @@
+{
+  "name": "mistville-overlay",
+  "productName": "Mistville Overlay",
+  "version": "0.1.0",
+  "description": "Mistville advice and the day's board in a small card over Torchlight: Infinite, updated live from the game's log.",
+  "license": "MIT",
+  "private": true,
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "check-log": "node test/check-log.js"
+  },
+  "devDependencies": {
+    "electron": "44.5.1"
+  }
+}

@@ -1,0 +1,227 @@
+{
+  "version": 1,
+  "comment": "Old Stuff / Food pairings and tags (M5.1; recommendation guide reworked in M8). Sources: the category table in the author's Mistville notes + the recommendation map (told by the author 2026-10-08; the four economy members clarified 2026-10-09). Names follow catalog.json (the log names); synergy:selftest checks that every entry, pair and requirement resolves. Fields: archetype (General/Preview/Stele/Food); tier1/tier2 tags (Coin gain/Coin savings/Sanity recovery/Sanity savings/Max Sanity/Preview/Other); pairs: two-way pairings (with + note; a held partner puts it first in its category and shows on the gain card); requires: missing-piece hint (text only, no score; requiresAny=true means any one is enough); priority: must = must-pick ⭐ / high = recommended (display only, first in its category); source: encounter = encounter-only (never in pick-1-of-3 or Trader offers, left out of the ranking); guide: the recommendation map (M8/D13-1: three day stages × category priority × order within a category; the late stage fills gaps by group priority); groupPriority: the full order of build groups (late-stage gap filling and panel order); phases is kept for old clients (M7 and earlier): new loaders ignore it, old loaders need it; it can go once minVersion forces an upgrade.",
+  "guide": {
+    "segments": [
+      { "label": "Early", "fromDay": 1, "toDay": 5, "strategy": "Economy engine and Vendor Items first: look for Coin gain Old Stuff, always take Guild Medal - Old Stuff / Chief Trader's Statue; Sanity recovery next",
+        "categories": [
+          { "label": "Coin gain", "priority": "high", "build": "economy", "items": [
+            { "name": "Banker's IOU" }, { "name": "Cartographer's Purse" }, { "name": "Filth Eater's Wages" },
+            { "name": "Amulet: Poverty", "lowest": true } ] },
+          { "label": "Utility", "priority": "high", "build": "shop", "items": [
+            { "name": "Guild Medal - Old Stuff" }, { "name": "Chief Trader's Statue" }, { "name": "Shopping List" } ] },
+          { "label": "Sanity recovery", "priority": "mid", "items": [
+            { "name": "Doctor's Lantern" }, { "name": "Beak Mask" }, { "name": "Ms. Grumpy" }, { "name": "Mr. Misfortune" }, { "name": "Baby Bear" }, { "name": "Special Protection Pass" } ] }
+        ] },
+      { "label": "Mid", "fromDay": 6, "toDay": 10, "strategy": "Max Sanity pairs and preview build first: holding a Coin half (Purse/Wages), get its Sanity half; then complete the alchemy pair",
+        "categories": [
+          { "label": "Max Sanity", "priority": "high", "build": "sanityPair", "items": [
+            { "name": "Wriggling Money Jar" }, { "name": "Cartographer's Medicine Bottle" }, { "name": "Mr. Misfortune" } ] },
+          { "label": "Preview", "priority": "high", "build": "preview", "items": [
+            { "name": "Cartographer's Quill" }, { "name": "Cartographer's Purse" }, { "name": "Cartographer's Medicine Bottle" }, { "name": "Cartographer's Stool" } ] },
+          { "label": "Sanity recovery", "priority": "mid", "build": "stoneHeal", "items": [
+            { "name": "Watchful Purse" }, { "name": "Special Protection Pass" }, { "name": "Baby Bear" }, { "name": "Cartographer's Stool" } ] },
+          { "label": "Utility", "priority": "mid", "build": "discount", "items": [
+            { "name": "Alchemy Catalyst" }, { "name": "Apprentice Alchemist's Gloves" } ] }
+        ] },
+      { "label": "Late", "fromDay": 11, "toDay": 15, "mode": "gap-fill",
+        "strategy": "Fill gaps by build priority: Economy engine > Max Sanity pairs > Vendor Items > Preview build > Stele healing > Upgrade set > Free stele removal > Map previews; with enough Sanity, head straight for the Clock Tower" }
+    ],
+    "groupPriority": ["economy", "sanityPair", "shop", "preview", "stoneHeal", "discount", "stoneFree", "mapPreview"]
+  },
+  "phases": [
+    { "label": "Early", "fromDay": 1, "toDay": 5, "strategy": "Get Coin gain Old Stuff first (economy engine first)", "boostTags": ["Coin gain"], "priorityBuilds": ["economy", "shop"] },
+    { "label": "Mid", "fromDay": 6, "toDay": 10, "strategy": "Prefer Max Sanity, Sanity recovery and Sanity savings Old Stuff", "boostTags": ["Max Sanity", "Sanity recovery", "Sanity savings"], "priorityBuilds": ["sanityPair", "preview"] },
+    { "label": "Late", "fromDay": 11, "toDay": 15, "strategy": "With enough Sanity, head straight for the Clock Tower; with enough Coins, use preview/reveal Food to find it fast", "boostTags": [], "priorityBuilds": ["economy", "sanityPair", "stoneHeal", "mapPreview"] }
+  ],
+  "builds": [
+    { "id": "economy", "label": "Economy engine", "kind": "collect", "members": ["Banker's IOU", "Cartographer's Purse", "Filth Eater's Wages", "Amulet: Poverty"], "anyOf": [], "target": 1, "minDay": 1, "note": "Done once any of the four Coin gain Old Stuff reaches level 2; you can take more after that, but they're no longer pushed up; Coin-Filled Golden Goblet (unreliable) and \"Banker\" (encounter-only) don't count" },
+    { "id": "sanityPair", "label": "Max Sanity pairs", "kind": "pair", "members": ["Cartographer's Medicine Bottle", "Wriggling Money Jar", "Mr. Misfortune"], "anyOf": [], "pairs": [ { "base": "Cartographer's Purse", "partner": "Cartographer's Medicine Bottle" }, { "base": "Filth Eater's Wages", "partner": "Mr. Misfortune" } ], "wildcardPartners": ["Wriggling Money Jar"], "wildcardBaseTag": "Coin gain", "target": 1, "minDay": 1, "note": "A Max Sanity Old Stuff counts only together with its Coin gain partner (both level 2): Purse ↔ Medicine Bottle, Wages ↔ Mr. Misfortune; Wriggling Money Jar works with any Coin gain" },
+    { "id": "preview", "label": "Preview build", "kind": "collect", "members": ["Cartographer's Quill", "Cartographer's Purse", "Cartographer's Medicine Bottle", "Cartographer's Stool"], "anyOf": [], "target": 4, "minDay": 1, "note": null },
+    { "id": "discount", "label": "Upgrade set", "kind": "collect", "members": ["Alchemy Catalyst", "Apprentice Alchemist's Gloves"], "anyOf": [], "target": 2, "minDay": 1, "note": null },
+    { "id": "shop", "label": "Vendor Items", "kind": "collect", "members": ["Guild Medal - Old Stuff", "Chief Trader's Statue", "Shopping List"], "anyOf": [["Chief Trader's Statue", "Shopping List"]], "target": 2, "minDay": 1, "note": "Guild Medal - Old Stuff + Chief Trader's Statue or Shopping List (either one)" },
+    { "id": "stoneFree", "label": "Free stele removal", "kind": "collect", "members": ["Anxious Black Goat's Horn", "Amulet: Anxiety"], "anyOf": [], "target": 2, "minDay": 1, "note": null },
+    { "id": "stoneHeal", "label": "Stele healing", "kind": "collect", "members": ["Baby Bear", "Watchful Purse"], "anyOf": [], "target": 1, "minDay": 1, "note": null },
+    { "id": "mapPreview", "label": "Map previews", "kind": "collect", "members": ["Map: Bank", "Map: Sanatorium", "Map: Alchemy Workshop", "Map: Mistville Trader", "Map: Unknown Old Stuff", "Map: Bad Omen Stele - Anxiety", "Burnt Map"], "anyOf": [], "target": 7, "minDay": 1, "note": "Lowest group priority (8th): filled in order on days 11-15" }
+  ],
+  "relics": [
+    { "name": "Doctor's Lantern", "archetype": "General", "tier1": "Max Sanity", "tier2": "Max Sanity", "note": "If you get it early, upgrade it first" },
+    { "name": "Sleeping Spice", "archetype": "General", "tier1": "Sanity recovery", "tier2": "Sanity recovery", "pairs": [{ "with": "Raven Consomme", "note": "turns steles into Sanatoriums" }] },
+    { "name": "Fluffy Old Blanket", "archetype": "General", "tier1": "Sanity savings", "tier2": "Sanity savings" },
+    { "name": "Wriggling Money Jar", "archetype": "General", "tier1": "Sanity recovery", "tier2": "Max Sanity", "pairs": [
+      { "with": "Banker's IOU", "note": "Coins gained restore Sanity or raise Max Sanity" },
+      { "with": "Cartographer's Purse", "note": "Coins gained restore Sanity or raise Max Sanity" },
+      { "with": "Filth Eater's Wages", "note": "Coins gained restore Sanity or raise Max Sanity" },
+      { "with": "Amulet: Poverty", "note": "Coins gained restore Sanity or raise Max Sanity" },
+      { "with": "Lard Potion", "note": "gain Coins and restore Sanity" },
+      { "with": "Golden Caviar", "note": "gain Coins and restore Sanity" },
+      { "with": "Golden Frog Eggs", "note": "gain Coins and restore Sanity" },
+      { "with": "Golden Worm Cheese", "note": "gain Coins and restore Sanity" }
+    ] },
+    { "name": "Watchful Purse", "archetype": "General", "tier1": "Sanity recovery", "tier2": "Sanity recovery", "pairs": [
+      { "with": "Banker's IOU", "note": "Coins gained restore Sanity (like Wriggling Money Jar)" },
+      { "with": "Cartographer's Purse", "note": "Coins gained restore Sanity (like Wriggling Money Jar)" },
+      { "with": "Filth Eater's Wages", "note": "Coins gained restore Sanity (like Wriggling Money Jar)" },
+      { "with": "Amulet: Poverty", "note": "Coins gained restore Sanity (like Wriggling Money Jar)" }
+    ] },
+    { "name": "Sanatorium Contract", "archetype": "General", "tier1": "Sanity recovery", "tier2": "Max Sanity", "pairs": [{ "with": "Raven Consomme", "note": "turns steles into Sanatoriums" }] },
+    { "name": "Special Protection Pass", "archetype": "General", "tier1": "Sanity recovery", "tier2": "Sanity recovery" },
+    { "name": "Cartographer's Medicine Bottle", "archetype": "Preview", "tier1": "Sanity recovery", "tier2": "Max Sanity", "pairs": [
+      { "with": "Cartographer's Quill", "note": "steady Sanity recovery or Max Sanity" },
+      { "with": "Cartographer's Purse", "note": "previewing Cells earns Coins, plus steady Max Sanity" },
+      { "with": "Banker's Chocolate Coin", "note": "previewing Cells earns Coins" },
+      { "with": "Sanatorium Sugar Pill", "note": "previewing Cells earns Coins" },
+      { "with": "Skewered Fish Eyes", "note": "previewing Cells earns Coins" },
+      { "with": "Alchemy Workshop Rainbow Candy", "note": "previewing Cells earns Coins" },
+      { "with": "Trader's Sugar Cube", "note": "previewing Cells earns Coins" },
+      { "with": "Clock Tower Sleeping Candy", "note": "previewing Cells earns Coins" },
+      { "with": "Mud-Boiled Sheep Eyes", "note": "previewing Cells earns Coins" },
+      { "with": "Butter-Grilled Fish Eyes", "note": "previewing Cells earns Coins" }
+    ] },
+    { "name": "Cartographer's Stool", "archetype": "Preview", "tier1": "Sanity recovery", "tier2": "Sanity recovery", "pairs": [
+      { "with": "Cartographer's Quill", "note": "steady Sanity recovery" },
+      { "with": "Cartographer's Purse", "note": "previewing Cells earns Coins, plus steady Sanity recovery" }
+    ] },
+    { "name": "Mr. Misfortune", "archetype": "Stele", "tier1": "Sanity recovery", "tier2": "Max Sanity", "pairs": [{ "with": "Filth Eater's Wages", "note": "removing steles earns Coins" }] },
+    { "name": "Baby Bear", "archetype": "Stele", "tier1": "Sanity recovery", "tier2": "Sanity recovery", "pairs": [{ "with": "Filth Eater's Wages", "note": "removing steles earns Coins, plus steady Sanity recovery" }] },
+    { "name": "Delicious Condiment", "archetype": "Food", "tier1": "Sanity recovery", "tier2": "Max Sanity", "pairs": [
+      { "with": "Gourmet's Knife and Fork", "note": "cheaper Food" },
+      { "with": "Guild Medal - Food", "note": "cheaper Food" }
+    ] },
+    { "name": "Healthy Condiment", "archetype": "Food", "tier1": "Sanity recovery", "tier2": "Sanity recovery" },
+    { "name": "Beak Mask", "archetype": "General", "tier1": "Sanity savings", "tier2": "Sanity savings" },
+    { "name": "Ms. Grumpy", "archetype": "Stele", "tier1": "Sanity savings", "tier2": "Sanity savings" },
+    { "name": "Scavenger's Boots", "archetype": "General", "tier1": "Other", "tier2": "Sanity savings" },
+    { "name": "Banker's IOU", "archetype": "General", "tier1": "Coin gain", "tier2": "Coin gain", "pairs": [
+      { "with": "Lard Potion", "note": "lots of Coins" },
+      { "with": "Rotten Raven Bisque", "note": "turns steles into Banks" },
+      { "with": "Water of Blithe", "note": "turns steles into Banks" }
+    ] },
+    { "name": "Coin-Filled Golden Goblet", "archetype": "General", "tier1": "Coin gain", "tier2": "Coin gain" },
+    { "name": "Burnt Map", "archetype": "Preview", "tier1": "Preview", "tier2": "Preview", "pairs": [{ "with": "Cartographer's Purse", "note": "previewing Cells earns Coins" }] },
+    { "name": "Map: Sanatorium", "archetype": "Preview", "tier1": "Preview", "tier2": "Preview" },
+    { "name": "Map: Bank", "archetype": "Preview", "tier1": "Preview", "tier2": "Preview" },
+    { "name": "Map: Alchemy Workshop", "archetype": "Preview", "tier1": "Preview", "tier2": "Preview" },
+    { "name": "Map: Mistville Trader", "archetype": "Preview", "tier1": "Preview", "tier2": "Preview" },
+    { "name": "Map: Unknown Old Stuff", "archetype": "Preview", "tier1": "Preview", "tier2": "Preview" },
+    { "name": "Map: Food", "archetype": "Preview", "tier1": "Preview", "tier2": "Preview" },
+    { "name": "Cartographer's Quill", "archetype": "Preview", "tier1": "Preview", "tier2": "Preview", "pairs": [
+      { "with": "Cartographer's Purse", "note": "previewing Cells earns Coins" },
+      { "with": "Cartographer's Medicine Bottle", "note": "previewing Cells restores Sanity or raises Max Sanity" },
+      { "with": "Cartographer's Stool", "note": "previewing Cells restores Sanity" }
+    ] },
+    { "name": "Cartographer's Purse", "archetype": "Preview", "tier1": "Coin gain", "tier2": "Coin gain", "pairs": [
+      { "with": "Cartographer's Quill", "note": "steady Coins" },
+      { "with": "Banker's Chocolate Coin", "note": "previewing Cells earns Coins" },
+      { "with": "Sanatorium Sugar Pill", "note": "previewing Cells earns Coins" },
+      { "with": "Skewered Fish Eyes", "note": "previewing Cells earns Coins" },
+      { "with": "Alchemy Workshop Rainbow Candy", "note": "previewing Cells earns Coins" },
+      { "with": "Trader's Sugar Cube", "note": "previewing Cells earns Coins" },
+      { "with": "Clock Tower Sleeping Candy", "note": "previewing Cells earns Coins" },
+      { "with": "Mud-Boiled Sheep Eyes", "note": "previewing Cells earns Coins" },
+      { "with": "Butter-Grilled Fish Eyes", "note": "previewing Cells earns Coins" }
+    ], "requires": ["Cartographer's Quill"], "note": "Economy core of the preview build" },
+    { "name": "Guild Medal - Old Stuff", "archetype": "General", "tier1": "Coin savings", "tier2": "Coin savings", "priority": "must", "note": "High priority: must-pick when offered" },
+    { "name": "Guild Medal - Food", "archetype": "Food", "tier1": "Coin savings", "tier2": "Coin savings" },
+    { "name": "Chief Trader's Statue", "archetype": "General", "tier1": "Other", "tier2": "Coin savings", "priority": "must", "note": "High priority: must-pick when offered" },
+    { "name": "Shopping List", "archetype": "General", "tier1": "Other", "tier2": "Other", "priority": "high", "note": "Without Chief Trader's Statue, take this first" },
+    { "name": "Apprentice Alchemist's Gloves", "archetype": "General", "tier1": "Coin savings", "tier2": "Coin savings" },
+    { "name": "Alchemy Catalyst", "archetype": "General", "tier1": "Coin savings", "tier2": "Coin savings" },
+    { "name": "Scavenger's Pliers", "archetype": "General", "tier1": "Other", "tier2": "Other", "priority": "high", "note": "High priority: once upgraded you take two Old Stuff from a Cell" },
+    { "name": "Gourmet's Knife and Fork", "archetype": "Food", "tier1": "Other", "tier2": "Other", "pairs": [
+      { "with": "Guild Medal - Food", "note": "cheaper Food" },
+      { "with": "Sterling Silver Lunch Box", "note": "cheaper Food" }
+    ] },
+    { "name": "Sterling Silver Lunch Box", "archetype": "Food", "tier1": "Other", "tier2": "Other" },
+    { "name": "Map: Bad Omen Stele - Blindness", "archetype": "Preview", "tier1": "Preview", "tier2": "Preview" },
+    { "name": "Map: Bad Omen Stele - Anxiety", "archetype": "Preview", "tier1": "Preview", "tier2": "Preview" },
+    { "name": "Map: Bad Omen Stele - Poverty", "archetype": "Preview", "tier1": "Preview", "tier2": "Preview" },
+    { "name": "Map: Bad Omen Stele - Anorexia", "archetype": "Preview", "tier1": "Preview", "tier2": "Preview" },
+    { "name": "Blind Black Goat's Horn", "archetype": "Stele", "tier1": "Other", "tier2": "Other" },
+    { "name": "Anxious Black Goat's Horn", "archetype": "Stele", "tier1": "Other", "tier2": "Other", "pairs": [{ "with": "Amulet: Anxiety", "note": "stele removal costs nothing" }] },
+    { "name": "Poor Black Goat's Horn", "archetype": "Stele", "tier1": "Other", "tier2": "Other" },
+    { "name": "Anorexic Black Goat's Horn", "archetype": "Stele", "tier1": "Other", "tier2": "Other" },
+    { "name": "Amulet: Blindness", "archetype": "Stele", "tier1": "Other", "tier2": "Other" },
+    { "name": "Amulet: Anxiety", "archetype": "Stele", "tier1": "Other", "tier2": "Other", "pairs": [{ "with": "Anxious Black Goat's Horn", "note": "stele removal costs nothing" }] },
+    { "name": "Amulet: Poverty", "archetype": "Stele", "tier1": "Other", "tier2": "Coin gain", "pairs": [
+      { "with": "Poor Black Goat's Horn", "note": "turns every stele into a Poverty stele" },
+      { "with": "Map: Bad Omen Stele - Poverty", "note": "previews every Poverty stele" }
+    ] },
+    { "name": "Amulet: Anorexia", "archetype": "Stele", "tier1": "Other", "tier2": "Other" },
+    { "name": "Filth Eater's Wages", "archetype": "Stele", "tier1": "Coin gain", "tier2": "Coin gain", "pairs": [
+      { "with": "Mr. Misfortune", "note": "remove steles for less Sanity and earn Coins" },
+      { "with": "Ms. Grumpy", "note": "remove steles for less Sanity and earn Coins" },
+      { "with": "Baby Bear", "note": "remove steles for less Sanity and earn Coins" },
+      { "with": "Super Concentrated Sour Soup", "note": "removing steles earns Coins" },
+      { "with": "Fragrant Cat Food", "note": "removing steles earns Coins" },
+      { "with": "Secret Recipe Canned Meat", "note": "removing steles earns Coins" }
+    ], "requires": ["Mr. Misfortune", "Ms. Grumpy", "Baby Bear"], "requiresAny": true, "note": "Economy core of the stele build" },
+    { "name": "Filth Eater's Dinner", "archetype": "Stele", "tier1": "Other", "tier2": "Other" },
+    { "name": "Filth Eater's Token", "archetype": "Stele", "tier1": "Other", "tier2": "Other" },
+    { "name": "Filth Eater's Map", "archetype": "Stele", "tier1": "Preview", "tier2": "Preview" },
+    { "name": "\"Explorer\"", "archetype": "Preview", "tier1": "Preview", "tier2": "Preview", "source": "encounter", "priority": "must", "note": "Special Old Stuff, only from Folklore events. Must-pick when offered" },
+    { "name": "Spoiled Sauce", "archetype": "General", "tier1": "Other", "tier2": "Other", "source": "encounter", "priority": "must", "note": "Special Old Stuff, only from Folklore events. Must-pick when offered" },
+    { "name": "Torn Map", "archetype": "Preview", "tier1": "Preview", "tier2": "Preview", "source": "encounter", "note": "Special Old Stuff, only from Folklore events" },
+    { "name": "Explorer's Glasses", "archetype": "Preview", "tier1": "Preview", "tier2": "Preview", "source": "encounter", "note": "Special Old Stuff, only from Folklore events" },
+    { "name": "Brain in a Jar", "archetype": "General", "tier1": "Other", "tier2": "Other", "source": "encounter", "note": "Special Old Stuff, only from Folklore events; level 1 only: Sanity can't drop to 0, gone when a new day begins" },
+    { "name": "\"Diviner\"", "archetype": "Preview", "tier1": "Preview", "tier2": "Preview", "source": "encounter", "priority": "must", "note": "Special Old Stuff, only from Folklore events. Must-pick when offered" },
+    { "name": "\"Banker\"", "archetype": "General", "tier1": "Coin gain", "tier2": "Coin gain", "source": "encounter", "priority": "must", "note": "Special Old Stuff, only from Folklore events. Must-pick when offered" },
+    { "name": "\"Cartographer\"", "archetype": "Preview", "tier1": "Preview", "tier2": "Preview", "source": "encounter", "priority": "must", "note": "Special Old Stuff, only from Folklore events. Must-pick when offered" },
+    { "name": "First Bank's Shackles", "archetype": "General", "tier1": "Other", "tier2": "Other", "source": "encounter", "note": "Special Old Stuff, only from Folklore events" },
+    { "name": "Rusty Cranial Nail", "archetype": "General", "tier1": "Other", "tier2": "Other", "source": "encounter", "note": "Special Old Stuff, only from Folklore events" },
+    { "name": "Amnesia Patient's Key", "archetype": "General", "tier1": "Other", "tier2": "Other", "source": "encounter", "note": "Special Old Stuff, only from Folklore events" },
+    { "name": "Uncanny Tales: Secret", "archetype": "General", "tier1": "Other", "tier2": "Other", "source": "encounter", "note": "Special Old Stuff, only from Folklore events" },
+    { "name": "Uncanny Tales: Gaze", "archetype": "General", "tier1": "Other", "tier2": "Other", "source": "encounter", "note": "Special Old Stuff, only from Folklore events" },
+    { "name": "White Crow Bonsai", "archetype": "General", "tier1": "Sanity savings", "tier2": "Sanity savings", "source": "encounter", "note": "Special Old Stuff, only from Folklore events" },
+    { "name": "Black Crow Bonsai", "archetype": "General", "tier1": "Sanity savings", "tier2": "Sanity savings", "source": "encounter", "note": "Special Old Stuff, only from Folklore events" },
+    { "name": "Egg of the Deep Mist", "archetype": "General", "tier1": "Sanity savings", "tier2": "Sanity savings", "source": "encounter", "note": "Special Old Stuff, only from Folklore events; upgrading it to level 2 pays off" },
+    { "name": "Egg of the Shallow Mist", "archetype": "General", "tier1": "Sanity savings", "tier2": "Sanity savings", "source": "encounter", "note": "Special Old Stuff, only from Folklore events; upgrading it to level 2 pays off" },
+    { "name": "Resident's Old Bowl", "archetype": "General", "tier1": "Other", "tier2": "Other", "source": "encounter", "note": "Special Old Stuff, only from Folklore events" },
+    { "name": "Resident's Wooden Box", "archetype": "General", "tier1": "Other", "tier2": "Other", "source": "encounter", "note": "Special Old Stuff, only from Folklore events" }
+  ],
+  "foods": [
+    { "name": "Clock Tower Sleeping Candy", "archetype": "Preview", "pairs": [{ "with": "Fireflies in Oil", "note": "reveals the Clock Tower directly" }] },
+    { "name": "Trader's Sugar Cube", "archetype": "Preview" },
+    { "name": "Banker's Chocolate Coin", "archetype": "Preview" },
+    { "name": "Sanatorium Sugar Pill", "archetype": "Preview" },
+    { "name": "Alchemy Workshop Rainbow Candy", "archetype": "Preview" },
+    { "name": "Super Concentrated Sour Soup", "archetype": "Stele" },
+    { "name": "Grilled White Truffle", "archetype": "General" },
+    { "name": "Golden Caviar", "archetype": "General" },
+    { "name": "Rich Pork Pate", "archetype": "General", "note": "Gives 1 Food +1 use; can't be used on itself" },
+    { "name": "Fragrant Cat Food", "archetype": "Stele" },
+    { "name": "Secret Recipe Canned Meat", "archetype": "Stele" },
+    { "name": "Raven Consomme", "archetype": "Stele" },
+    { "name": "Rotten Raven Bisque", "archetype": "Stele" },
+    { "name": "Lard Potion", "archetype": "General", "pairs": [{ "with": "Rich Pork Pate", "note": "more uses" }] },
+    { "name": "Golden Worm Cheese", "archetype": "General", "pairs": [{ "with": "Rich Pork Pate", "note": "more uses" }], "note": "If your Sanity would overflow, eat it for Coins" },
+    { "name": "Layered Sandwich", "archetype": "General", "pairs": [{ "with": "Rich Pork Pate", "note": "more uses" }] },
+    { "name": "Fireflies in Oil", "archetype": "General" },
+    { "name": "Butter-Grilled Fish Eyes", "archetype": "Preview" },
+    { "name": "Charcoal-Grilled Tentacle Skewer", "archetype": "General" },
+    { "name": "Pickled Mistfish", "archetype": "General" },
+    { "name": "Pink Walnut Kernel", "archetype": "General", "note": "Gain Old Stuff: Brain in a Jar" },
+    { "name": "Night Pudding", "archetype": "Stele", "pairs": [{ "with": "Rich Pork Pate", "note": "more uses" }], "note": "Greatly lowers stele removal costs" },
+    { "name": "Wally's Grapes", "archetype": "General", "pairs": [{ "with": "Rich Pork Pate", "note": "more uses" }] },
+    { "name": "Dreamfish Sashimi", "archetype": "General", "pairs": [{ "with": "Rich Pork Pate", "note": "more uses" }] },
+    { "name": "Alchemy Potion Pickles", "archetype": "General", "pairs": [{ "with": "Rich Pork Pate", "note": "more uses" }], "note": "Upgrades Old Stuff directly" },
+    { "name": "Alchemy Potion Cured Meat", "archetype": "General", "pairs": [{ "with": "Rich Pork Pate", "note": "more uses" }] },
+    { "name": "Dried Mistfish", "archetype": "General" },
+    { "name": "Skewered Fish Eyes", "archetype": "Preview" },
+    { "name": "Firefly Sashimi", "archetype": "General" },
+    { "name": "Golden Frog Eggs", "archetype": "General", "pairs": [{ "with": "Rich Pork Pate", "note": "more uses" }] },
+    { "name": "Delicate Frosting", "archetype": "Preview" },
+    { "name": "Walnut Pudding", "archetype": "Preview" },
+    { "name": "Pig Liver Medicine Soup", "archetype": "General", "note": "Restores a lot of Sanity" },
+    { "name": "Tentacle Cream Soup", "archetype": "General" },
+    { "name": "Half a Piece of Raspberry Pie", "archetype": "Preview" },
+    { "name": "Water of Joy", "archetype": "Stele" },
+    { "name": "Water of Blithe", "archetype": "Stele" },
+    { "name": "Explorer's Meat & Rice", "archetype": "General" },
+    { "name": "Fluorescent Moth Soup", "archetype": "General", "pairs": [{ "with": "Rich Pork Pate", "note": "more uses" }], "note": "Finds the Clock Tower directly" },
+    { "name": "Mud-Boiled Sheep Eyes", "archetype": "Preview" },
+    { "name": "Grilled Raven Skewer", "archetype": "General" },
+    { "name": "Spider Silk Noodles", "archetype": "General", "pairs": [{ "with": "Rich Pork Pate", "note": "more uses" }], "note": "Sanity savings" },
+    { "name": "Half a Piece of Golden Lava Cake", "archetype": "General" }
+  ]
+}

@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'">
+<title>Mistville Overlay</title>
+<link rel="stylesheet" href="common.css">
+<style>
+  html, body { background: transparent; overflow: hidden; }
+  body { user-select: none; }
+  #card { margin: 6px; background: var(--bg); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,.45); overflow: hidden; }
+  .bar { display: flex; align-items: center; gap: 8px; padding: 6px 8px 6px 12px; background: linear-gradient(90deg, rgba(74,111,199,.55), rgba(58,92,168,.25)); -webkit-app-region: drag; }
+  .bar h1 { font-size: 12.5px; letter-spacing: .08em; color: #9ec5ff; font-weight: 700; }
+  .stats { display: flex; gap: 10px; margin-left: auto; font-variant-numeric: tabular-nums; }
+  .stat b { color: #fff; }
+  .stat.sanity b { color: #9fb4ff; } .stat.coins b { color: var(--gold); }
+  .bar button { -webkit-app-region: no-drag; background: rgba(255,255,255,.08); color: var(--muted); border: 0; border-radius: 6px; width: 22px; height: 20px; cursor: pointer; font-size: 12px; }
+  .bar button:hover { background: rgba(255,255,255,.18); color: #fff; }
+  /* the body folds up under the title bar during combat (rows 1fr -> 0fr), and drops back down after */
+  .bodywrap { display: grid; grid-template-rows: 1fr; transition: grid-template-rows .32s ease, opacity .25s ease; }
+  .bodyclip { overflow: hidden; min-height: 0; }
+  #card.combat:not(.peek) .bodywrap { grid-template-rows: 0fr; opacity: 0; }
+  .fight { display: none; color: #ffb3b3; font-weight: 700; letter-spacing: .04em; font-size: 12px; }
+  #card.combat .fight { display: inline; }
+  #card.combat .bar h1 { display: none; }
+  .bar, .bar * { white-space: nowrap; }
+  .body { padding: 8px 10px 10px; display: grid; gap: 8px; }
+  .folded .body .fold-hide { display: none; }
+
+  /* exploring: the counts and the grid */
+  .counts { display: flex; flex-wrap: wrap; gap: 4px 10px; font-variant-numeric: tabular-nums; }
+  .cnt { display: inline-flex; align-items: baseline; gap: 3px; color: var(--text); font-weight: 600; }
+  .cnt.done { color: #8a96bb; } .cnt.short { color: #fff; }
+  .cnt em { font-style: normal; color: #ffb36b; font-size: 11px; margin-left: 1px; }
+  /* something of it is left on the floor: a bar under the count (orange: revealed, not used yet; blue dashes: still hidden) */
+  .cnt { position: relative; padding-bottom: 5px; }
+  .cnt::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 3px; border-radius: 2px; }
+  .cnt.unused::after { background: #ffb36b; box-shadow: 0 0 6px rgba(255,179,107,.55); }
+  .cnt.hidden::after { background: repeating-linear-gradient(90deg, rgba(76,201,240,.9) 0 4px, transparent 4px 7px); }
+  .cnt.unused.hidden::after { background: linear-gradient(90deg, #ffb36b 0 55%, transparent 55% 62%, rgba(76,201,240,.9) 62%); }
+  .leave { padding: 5px 8px; border-radius: 8px; border: 1px solid rgba(255,179,107,.7); background: rgba(255,140,40,.15); color: #ffd9b3; font-size: 12px; }
+  .board { display: grid; grid-template-columns: repeat(5, 30px); grid-auto-rows: 30px; gap: 3px; justify-content: center; }
+  .cell { border-radius: 5px; display: grid; place-items: center; font-size: 14px; font-weight: 800; background: #0b1226; border: 1px solid #1d2a47; color: var(--muted); }
+  .cell.explored { background: #18213a; border-color: #263452; }
+  .cell.reachable { border-color: rgba(76,201,240,.7); }
+  .cell.preview { box-shadow: inset 0 0 0 1px rgba(76,201,240,.6); }
+  .cell.sealed { color: #7a3348; font-size: 12px; background: #140c18; border-color: #3a1a2a; }
+  .cell.cand { color: #7f9cf5; font-size: 12px; border-style: dashed; border-color: #3b4f8a; }
+  .cell.k-start { background: #0f6e4a; border-color: #18a06b; color: #fff; }
+  .cell.k-exit { background: #8a6200; border-color: #ffbf33; color: #fff; }
+  .cell.k-stele { background: #2a0f1d; border-color: #5a1f3a; }
+  .cell.k-ruins { font-size: 12px; }
+  .cell.unused { box-shadow: inset 0 0 0 2px #ffb36b; }
+  .cell.route { font-size: 12px; }
+  .cell.route.cand { background: #24356a; color: #fff; border-style: solid; }
+  .cell.route.via { background: #222c48; color: #c9d3f5; }
+  .cell.cut { color: #fff; background: #6a1035; }
+  .cell.next { box-shadow: 0 0 0 2px #fff; animation: nextpulse 1.2s ease-in-out infinite; }
+  @keyframes nextpulse { 50% { box-shadow: 0 0 0 2px rgba(255,255,255,.25); } }
+  .bline { text-align: center; color: var(--muted); font-size: 11.5px; }
+  .bline .q { color: #7f9cf5; font-weight: 800; }
+  .bline .n1 { display: inline-block; min-width: 15px; text-align: center; border-radius: 3px; background: #fff; color: #102; padding: 0 2px; }
+
+  .hrow .hend { display: none; } /* no room for the end time in the card */
+  .clickthrough .bar { background: linear-gradient(90deg, rgba(60,60,80,.6), rgba(40,40,60,.3)); }
+</style>
+</head>
+<body>
+<div id="card">
+  <div class="bar">
+    <h1>MISTVILLE</h1><span class="fight" title="The board is closed: the card is folded up until it opens again">⚔ COMBAT</span>
+    <div class="stats"><span class="stat" id="day"></span><span class="stat sanity" id="sanity"></span><span class="stat coins" id="coins"></span></div>
+    <button id="gear" title="Settings">⚙</button><button id="fold" title="Fold">▾</button><button id="hide" title="Hide (Ctrl+Alt+M)">✕</button>
+  </div>
+  <div class="bodywrap"><div class="bodyclip"><div class="body" id="body"><div class="waiting">Waiting for the game’s log…</div></div></div></div>
+</div>
+<script src="panels.js"></script>
+<script src="overlay.js"></script>
+</body>
+</html>

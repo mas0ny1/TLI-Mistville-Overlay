@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'">
+<title>Mistville Overlay</title>
+<link rel="stylesheet" href="common.css">
+<style>
+  /* the main window (monitor, history, catalog, settings) in the card's colours */
+  html, body { height: 100%; }
+  body { background: #0a0f1e; overflow: hidden; }
+  .app { display: grid; grid-template-columns: 190px 1fr; height: 100%; }
+  .side { background: rgba(14,19,36,.96); border-right: 1px solid var(--line); padding: 14px 10px; display: grid; align-content: start; gap: 4px; }
+  .logo { font-weight: 800; letter-spacing: .12em; color: #9ec5ff; font-size: 13px; padding: 2px 8px 12px; }
+  .logo small { display: block; letter-spacing: .04em; color: var(--muted); font-weight: 600; font-size: 10.5px; margin-top: 2px; }
+  .nav { text-align: left; background: transparent; border: 1px solid transparent; color: var(--muted); padding: 7px 10px; border-radius: 8px; font: 600 12.5px 'Segoe UI', Tahoma, sans-serif; cursor: pointer; }
+  .nav:hover { background: rgba(255,255,255,.06); color: #fff; }
+  .nav.on { background: rgba(76,201,240,.16); border-color: var(--line); color: #fff; }
+  .main { overflow-y: auto; padding: 16px 20px 24px; }
+  .main::-webkit-scrollbar { width: 8px; } .main::-webkit-scrollbar-thumb { background: rgba(76,201,240,.3); border-radius: 4px; }
+  .page { display: grid; gap: 12px; max-width: 1100px; }
+  .panel { background: rgba(14,19,36,.94); border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px 12px; display: grid; gap: 8px; align-content: start; }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: start; }
+  .row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .tagst { font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 9px; text-transform: uppercase; background: rgba(255,255,255,.08); color: var(--muted); }
+  .tagst.run { background: rgba(241,196,15,.2); color: #ffe7a0; } .tagst.end { background: rgba(76,201,240,.2); color: #bfeeff; }
+  code.path { font: 11.5px Consolas, monospace; color: #b9c4e8; background: rgba(255,255,255,.05); padding: 2px 6px; border-radius: 6px; word-break: break-all; }
+  .btn { font-size: 12px; padding: 4px 12px; }
+  .btn.primary { background: rgba(76,201,240,.2); border-color: var(--line); color: #fff; }
+  .attrs { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 6px; }
+  .attr { background: rgba(255,255,255,.05); border-radius: 8px; padding: 5px 8px; display: grid; }
+  .attr span { color: var(--muted); font-size: 11px; } .attr strong { font-size: 15px; color: #fff; font-variant-numeric: tabular-nums; } .attr small { color: var(--muted); font-weight: 400; font-size: 11.5px; }
+  .attr strong.warn { color: var(--bad); }
+  .map { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+  .tile { position: relative; min-height: 58px; border-radius: 8px; padding: 5px 6px; background: #0b1226; border: 1px solid #1d2a47; display: grid; align-content: space-between; font-size: 11px; }
+  .tile.explored { background: #18213a; border-color: #263452; } .tile.previewed { box-shadow: inset 0 0 0 1px rgba(76,201,240,.6); }
+  .tile.blocked { background: #1a0d17; border-color: #4a1f33; } .tile.cand { border-style: dashed; border-color: #3b4f8a; }
+  .tile .ti { color: var(--muted); font-size: 10px; } .tile .tl { font-weight: 600; color: var(--text); line-height: 1.2; }
+  .tile .tc { color: #ffb36b; font-size: 10.5px; } .tile .tb { position: absolute; top: 4px; right: 6px; color: #e0708e; font-size: 11px; }
+  .tile .tl .m { margin-right: 3px; }
+  .scroll.events.tall { max-height: 360px; }
+  .hrow { grid-template-columns: 1fr auto auto auto auto auto; font-size: 12px; }
+  .scroll.short { max-height: 260px; } .scroll.cat { max-height: none; }
+  .cathint { display: none; } .crow .cmore { display: grid; } .crow { cursor: default; }
+  .schart { height: 120px; }
+  /* settings: the strategy page */
+  .form { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px 14px; }
+  .field { display: grid; gap: 3px; } .field label { font-weight: 600; } .field small { color: var(--muted); font-size: 11px; }
+  input[type=number], input[type=text], textarea { background: #0b1226; color: var(--text); border: 1px solid #263452; border-radius: 7px; padding: 5px 8px; font: 12.5px 'Segoe UI', Tahoma, sans-serif; }
+  input:focus, textarea:focus { outline: none; border-color: var(--accent); }
+  textarea { font: 11.5px Consolas, monospace; min-height: 180px; resize: vertical; width: 100%; }
+  .hint { color: var(--muted); font-size: 12px; }
+  .status { color: var(--good); font-weight: 600; } .status.err { color: var(--bad); }
+  .panel.logwarn { font-size: 12.5px; background: rgba(224,112,142,.14); border-color: rgba(224,112,142,.55); } .panel.logwarn h2 { color: #ff9fb3; }
+  .scroll.unknown { font: 11.5px Consolas, monospace; color: #b9c4e8; display: grid; gap: 3px; word-break: break-all; }
+  details summary { cursor: pointer; color: var(--accent); font-weight: 700; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
+  details[open] summary { margin-bottom: 6px; }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="logo">MISTVILLE<small>Run advisor</small></div>
+    <button class="nav" data-page="monitor">Monitor</button>
+    <button class="nav" data-page="history">History</button>
+    <button class="nav" data-page="catalog">Catalog</button>
+    <button class="nav" data-page="settings">Settings</button>
+  </aside>
+  <main class="main" id="main"><div class="muted">Waiting for the game’s log…</div></main>
+</div>
+<script src="panels.js"></script>
+<script src="window.js"></script>
+</body>
+</html>
